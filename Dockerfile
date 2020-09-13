@@ -2,7 +2,7 @@ FROM alpine:3.8
 LABEL maintainer="Zhuohuan LI <zixia@zixia.net>"
 
 ENV BATS_VERSION 1.2.1
-ENV S6_VERSION 2.0.0.1
+ENV S6_VERSION 2.1.0.0
 
 ## Install System
 
@@ -16,6 +16,8 @@ RUN apk add --update --no-cache \
         postfix \
         syslog-ng \
         tzdata \
+        opendkim \
+        opendkim-utils \
     \
     && curl -s -o "/tmp/v${BATS_VERSION}.tar.gz" -L \
         "https://github.com/bats-core/bats-core/archive/v${BATS_VERSION}.tar.gz" \
@@ -25,18 +27,19 @@ RUN apk add --update --no-cache \
     && rm -rf /tmp/*
 
 ## Install s6 process manager
-RUN curl -L -s https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-nobin.tar.gz \
-  | tar xzf - -C /
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
+RUN gunzip -c /tmp/s6-overlay-amd64.tar.gz | tar -xf - -C /
 
 ## Configure Service
 
 COPY install/main.dist.cf /etc/postfix/main.cf
 COPY install/master.dist.cf /etc/postfix/master.cf
 COPY install/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
+COPY install/opendkim.conf /etc/opendkim/opendkim.conf
 
 RUN cat /dev/null > /etc/postfix/aliases && newaliases \
     && echo simple-mail-forwarder.com > /etc/hostname \
-    \
+    && mkdir -p /run/opendkim \
     && echo test | saslpasswd2 -p test@test.com \
     && chown postfix /etc/sasldb2 \
     && saslpasswd2 -d test@test.com
@@ -53,6 +56,9 @@ RUN bash -n /etc/services.d/postfix/run && chmod +x /etc/services.d/postfix/run
 
 COPY install/syslog-ng.sh /etc/services.d/syslog-ng/run
 RUN bash -n /etc/services.d/syslog-ng/run && chmod +x /etc/services.d/syslog-ng/run
+
+COPY install/opendkim.sh /etc/services.d/opendkim/run
+RUN bash -n /etc/services.d/opendkim/run && chmod +x /etc/services.d/opendkim/run
 
 COPY entrypoint.sh /entrypoint.sh
 RUN bash -n /entrypoint.sh && chmod a+x /entrypoint.sh

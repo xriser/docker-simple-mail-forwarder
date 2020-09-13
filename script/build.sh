@@ -34,7 +34,7 @@ GIT_EMAIL='`git log -1 --format=%ce`'
 GIT_LOG='`git log -1 --format=%s`'
 _EOF
 
-CMD1="docker build -t ${IMAGE_NAME}${TAG} ."
+CMD1="docker build -t ${IMAGE_NAME}${TAG} . --no-cache"
 
 if [ -n "$CIRCLECI" ]
 then
