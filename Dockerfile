@@ -1,8 +1,11 @@
-FROM alpine:3.8
+FROM alpine:3.12
 LABEL maintainer="Zhuohuan LI <zixia@zixia.net>"
 
 ENV BATS_VERSION 1.2.1
 ENV S6_VERSION 2.1.0.0
+
+ENV SRS_DOMAIN example.com
+ENV SRS_SECRET /etc/postsrsd.secret
 
 ## Install System
 
@@ -10,6 +13,9 @@ RUN apk add --update --no-cache \
         bash \
         curl \
         cyrus-sasl \
+        cyrus-sasl-plain \
+        cyrus-sasl-login \
+        ca-certificates \
         drill \
         logrotate \
         openssl \
@@ -18,6 +24,7 @@ RUN apk add --update --no-cache \
         tzdata \
         opendkim \
         opendkim-utils \
+        postsrsd \
     \
     && curl -s -o "/tmp/v${BATS_VERSION}.tar.gz" -L \
         "https://github.com/bats-core/bats-core/archive/v${BATS_VERSION}.tar.gz" \
@@ -39,10 +46,12 @@ COPY install/opendkim.conf /etc/opendkim/opendkim.conf
 
 RUN cat /dev/null > /etc/postfix/aliases && newaliases \
     && echo simple-mail-forwarder.com > /etc/hostname \
-    && mkdir -p /run/opendkim \
+    && mkdir -p /run/opendkim && chown opendkim:opendkim /run/opendkim \
     && echo test | saslpasswd2 -p test@test.com \
-    && chown postfix /etc/sasldb2 \
+    && chown postfix /etc/sasl2/sasldb2 \
     && saslpasswd2 -d test@test.com
+
+RUN tr -dc '1-9a-zA-Z' < /dev/random | head -c 32 > /etc/postsrsd.secret
 
 ## Copy App
 
@@ -59,6 +68,10 @@ RUN bash -n /etc/services.d/syslog-ng/run && chmod +x /etc/services.d/syslog-ng/
 
 COPY install/opendkim.sh /etc/services.d/opendkim/run
 RUN bash -n /etc/services.d/opendkim/run && chmod +x /etc/services.d/opendkim/run
+
+COPY install/postsrsd.sh /etc/services.d/postsrsd/run
+RUN bash -n /etc/services.d/postsrsd/run && chmod +x /etc/services.d/postsrsd/run
+
 
 COPY entrypoint.sh /entrypoint.sh
 RUN bash -n /entrypoint.sh && chmod a+x /entrypoint.sh

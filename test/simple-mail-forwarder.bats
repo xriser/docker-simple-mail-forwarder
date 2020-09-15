@@ -63,12 +63,12 @@
 }
 
 @test "confirm postfix is running" {
-    processNum=$(ps | grep -v grep | grep /usr/lib/postfix/master | wc -l)
+    processNum=$(ps | grep -v grep | grep /usr/libexec/postfix/master | wc -l)
     [ $processNum -gt 0 ]
 }
 
 @test "confirm port 25 is open" {
-    run netstat -nlt 
+    run netstat -nlt
     [ $status = 0 ]
     [[ $output =~ ":25 " ]]
 }
@@ -81,7 +81,7 @@
     [ $processNum -eq 1 ]
 }
 
-@test "ESMTP STATTLS supported" {
+@test "ESMTP STARTTLS supported" {
     output=$(echo ehlo simple.com | nc 127.0.0.1 25)
 
     [[ $output =~ STARTTLS ]]

@@ -58,7 +58,7 @@ command_directory = /usr/sbin
 # daemon programs (i.e. programs listed in the master.cf file). This
 # directory must be owned by root.
 #
-daemon_directory = /usr/lib/postfix
+daemon_directory = /usr/libexec/postfix
 
 # The data_directory parameter specifies the location of Postfix-writable
 # data files (caches, random numbers). This directory must be owned
@@ -153,8 +153,8 @@ mail_owner = postfix
 # compatible delivery agent that lookups all recipients in /etc/passwd
 # and /etc/aliases or their equivalent.
 #
-# The default is $myhostname + localhost.$mydomain.  On a mail domain
-# gateway, you should also include $mydomain.
+# The default is $myhostname + localhost.$mydomain + localhost.  On
+# a mail domain gateway, you should also include $mydomain.
 #
 # Do not specify the names of virtual domains - those domains are
 # specified elsewhere (see VIRTUAL_README).
@@ -249,7 +249,7 @@ unknown_local_recipient_reject_code = 550
 #
 # By default (mynetworks_style = subnet), Postfix "trusts" SMTP
 # clients in the same IP subnetworks as the local machine.
-# On Linux, this does works correctly only with interfaces specified
+# On Linux, this works correctly only with interfaces specified
 # with the "ifconfig" command.
 #
 # Specify "mynetworks_style = class" when Postfix should "trust" SMTP
@@ -591,7 +591,7 @@ unknown_local_recipient_reject_code = 550
 # logging level when an SMTP client or server host name or address
 # matches a pattern in the debug_peer_list parameter.
 #
-debug_peer_level = 1
+debug_peer_level = 2
 
 # The debug_peer_list parameter specifies an optional list of domain
 # or network patterns, /file/name patterns or type:name tables. When
@@ -623,7 +623,7 @@ debugger_command =
 #	>$config_directory/$process_name.$process_id.log & sleep 5
 #
 # Another possibility is to run gdb under a detached screen session.
-# To attach to the screen sesssion, su root and run "screen -r
+# To attach to the screen session, su root and run "screen -r
 # <id_string>" where <id_string> uniquely matches one of the detached
 # sessions (from "screen -list").
 #
@@ -743,3 +743,15 @@ smtpd_tls_exclude_ciphers =
 smtp_tls_security_level = may
 
 message_size_limit = 40960000
+
+#Setup DKIM
+milter_protocol = 2
+milter_default_action = accept
+smtpd_milters = unix:/run/opendkim/opendkim.sock
+non_smtpd_milters = unix:/run/opendkim/opendkim.sock
+
+#Setup SRS
+sender_canonical_maps = tcp:localhost:10001
+sender_canonical_classes = envelope_sender
+recipient_canonical_maps = tcp:localhost:10002
+recipient_canonical_classes= envelope_recipient,header_recipient
