@@ -69,6 +69,7 @@ RUN bash -n /etc/services.d/syslog-ng/run && chmod +x /etc/services.d/syslog-ng/
 COPY install/opendkim.sh /etc/services.d/opendkim/run
 RUN bash -n /etc/services.d/opendkim/run && chmod +x /etc/services.d/opendkim/run
 COPY install/default.private /var/db/dkim/default.private
+RUN chmod 400 /var/db/dkim/default.private && chown opendkim:opendkim /var/db/dkim/default.private
 
 COPY install/postsrsd.sh /etc/services.d/postsrsd/run
 RUN bash -n /etc/services.d/postsrsd/run && chmod +x /etc/services.d/postsrsd/run
