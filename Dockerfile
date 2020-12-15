@@ -29,7 +29,7 @@ RUN apk add --update --no-cache \
     && curl -s -o "/tmp/v${BATS_VERSION}.tar.gz" -L \
         "https://github.com/bats-core/bats-core/archive/v${BATS_VERSION}.tar.gz" \
     && tar -xzf "/tmp/v${BATS_VERSION}.tar.gz" -C /tmp/ \
-    && bash "/tmp/bats-core-${BATS_VERSION}/install.sh" /usr/local \
+    && bash "/tmp/bats-core-${BATS_VERSION}/install.sh" /usr/local
 
 ## Install s6 process manager
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
