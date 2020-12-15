@@ -30,12 +30,10 @@ RUN apk add --update --no-cache \
         "https://github.com/bats-core/bats-core/archive/v${BATS_VERSION}.tar.gz" \
     && tar -xzf "/tmp/v${BATS_VERSION}.tar.gz" -C /tmp/ \
     && bash "/tmp/bats-core-${BATS_VERSION}/install.sh" /usr/local \
-    \
-    && rm -rf /tmp/*
 
 ## Install s6 process manager
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
-RUN gunzip -c /tmp/s6-overlay-amd64.tar.gz | tar -xf - -C /
+RUN gunzip -c /tmp/s6-overlay-amd64.tar.gz | tar -xf - -C / && rm -rf /tmp/*
 
 ## Configure Service
 
