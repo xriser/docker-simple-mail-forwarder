@@ -306,6 +306,7 @@ then
     exit 1;
 fi
 
+/usr/local/bin/postwhite/postwhite
 start_postfix && test_running_env
 
 echo

@@ -25,22 +25,29 @@ RUN apk add --update --no-cache \
         opendkim \
         opendkim-utils \
         postsrsd \
-    \
+        procps gawk grep sed bind-tools tar \
     && curl -s -o "/tmp/v${BATS_VERSION}.tar.gz" -L \
         "https://github.com/bats-core/bats-core/archive/v${BATS_VERSION}.tar.gz" \
     && tar -xzf "/tmp/v${BATS_VERSION}.tar.gz" -C /tmp/ \
     && bash "/tmp/bats-core-${BATS_VERSION}/install.sh" /usr/local
 
+## Install whitelisting
+ADD https://github.com/spf-tools/spf-tools/archive/v2.1.tar.gz /tmp/
+RUN cd /tmp && tar xfz v2.1.tar.gz && mv spf-tools-2.1 spf-tools && mv spf-tools/ /usr/local/bin/
+ADD https://github.com/stevejenkins/postwhite/archive/v3.4.tar.gz /tmp/
+RUN cd /tmp && tar xfz v3.4.tar.gz && mv postwhite-3.4 postwhite && mv postwhite/ /usr/local/bin/ && cp /usr/local/bin/postwhite/postwhite.conf /etc/
+
 ## Install s6 process manager
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_VERSION}/s6-overlay-amd64.tar.gz /tmp/
 RUN gunzip -c /tmp/s6-overlay-amd64.tar.gz | tar -xf - -C / && rm -rf /tmp/*
 
-## Configure Service
-
+## Configure Services
 COPY install/main.dist.cf /etc/postfix/main.cf
 COPY install/master.dist.cf /etc/postfix/master.cf
 COPY install/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY install/opendkim.conf /etc/opendkim/opendkim.conf
+COPY install/00postwhite /etc/periodic/daily/00postwhite
+RUN chmod a+x /etc/periodic/daily/00postwhite
 
 RUN cat /dev/null > /etc/postfix/aliases && newaliases \
     && echo simple-mail-forwarder.com > /etc/hostname \
@@ -72,6 +79,8 @@ RUN chmod 400 /var/db/dkim/default.private && chown opendkim:opendkim /var/db/dk
 COPY install/postsrsd.sh /etc/services.d/postsrsd/run
 RUN bash -n /etc/services.d/postsrsd/run && chmod +x /etc/services.d/postsrsd/run
 
+COPY install/cron.sh /etc/services.d/cron/run
+RUN bash -n /etc/services.d/cron/run && chmod +x /etc/services.d/cron/run
 
 COPY entrypoint.sh /entrypoint.sh
 RUN bash -n /entrypoint.sh && chmod a+x /entrypoint.sh

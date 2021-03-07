@@ -761,8 +761,10 @@ postscreen_dnsbl_sites =
         b.barracudacentral.org=127.0.0.[2..11]*2
         bl.spameatingmonkey.net*2
         bl.spamcop.net
-
 #dnsbl.sorbs.net #Issue with Google IPs in spamlist
+
+postscreen_access_list = permit_mynetworks cidr:/etc/postfix/postscreen_spf_whitelist.cidr
+
 
 
 
