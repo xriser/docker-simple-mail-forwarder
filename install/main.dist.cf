@@ -748,7 +748,7 @@ message_size_limit = 40960000
 postscreen_greet_banner = Welcome to smtp server. Please wait...
 postscreen_greet_action = enforce
 
-# deep protocol tests. Warning, use it with postwite, or gmail will be blocked
+# deep protocol tests. Warning, use it with postwite/whitelist, or gmail/etc will be blocked
 postscreen_pipelining_enable = yes
 postscreen_pipelining_action = enforce
 postscreen_non_smtp_command_enable = yes
@@ -770,8 +770,6 @@ postscreen_dnsbl_sites =
 #dnsbl.sorbs.net #Issue with Google IPs in spamlist
 
 postscreen_access_list = permit_mynetworks cidr:/etc/postfix/postscreen_spf_whitelist.cidr
-
-
 
 
 #Setup DKIM

@@ -63,7 +63,7 @@
 }
 
 @test "confirm postfix is running" {
-    processNum=$(ps | grep -v grep | grep /usr/libexec/postfix/master | wc -l)
+    processNum=$(ps x | grep -v grep | grep /usr/libexec/postfix/master | wc -l)
     [ $processNum -gt 0 ]
 }
 
@@ -76,7 +76,7 @@
 @test "crond is running" {
     skip "skip this for 0.3.0 -> 0.4.0"
     read cronPid < /var/run/crond.pid
-    processNum=$(ps | grep $cronPid | grep crond | wc -l)
+    processNum=$(ps x | grep $cronPid | grep crond | wc -l)
 
     [ $processNum -eq 1 ]
 }
