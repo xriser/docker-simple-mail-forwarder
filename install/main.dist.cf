@@ -747,6 +747,8 @@ message_size_limit = 40960000
 #Setup Postscreen
 postscreen_greet_banner = Welcome to smtp server. Please wait...
 postscreen_greet_action = enforce
+
+# deep protocol tests. Warning, use it with postwite, or gmail will be blocked
 postscreen_pipelining_enable = yes
 postscreen_pipelining_action = enforce
 postscreen_non_smtp_command_enable = yes
@@ -761,6 +763,10 @@ postscreen_dnsbl_sites =
         b.barracudacentral.org=127.0.0.[2..11]*2
         bl.spameatingmonkey.net*2
         bl.spamcop.net
+        swl.spamhaus.org*-4,
+        list.dnswl.org=127.[0..255].[0..255].0*-2,
+        list.dnswl.org=127.[0..255].[0..255].1*-4,
+        list.dnswl.org=127.[0..255].[0..255].[2..3]*-6
 #dnsbl.sorbs.net #Issue with Google IPs in spamlist
 
 postscreen_access_list = permit_mynetworks cidr:/etc/postfix/postscreen_spf_whitelist.cidr
