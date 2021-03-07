@@ -744,6 +744,23 @@ smtp_tls_security_level = may
 
 message_size_limit = 40960000
 
+#Setup Postscreen
+postscreen_pipelining_enable = yes
+postscreen_non_smtp_command_enable = yes
+postscreen_pipelining_action = drop
+
+postscreen_dnsbl_threshold = 3
+postscreen_dnsbl_action = enforce
+postscreen_dnsbl_sites =
+        zen.spamhaus.org*3
+        b.barracudacentral.org=127.0.0.[2..11]*2
+        bl.spameatingmonkey.net*2
+        bl.spamcop.net
+
+#dnsbl.sorbs.net # Issue Google IPs in spamlist
+
+
+
 #Setup DKIM
 milter_protocol = 2
 milter_default_action = accept
@@ -754,4 +771,4 @@ non_smtpd_milters = unix:/run/opendkim/opendkim.sock
 sender_canonical_maps = tcp:localhost:10001
 sender_canonical_classes = envelope_sender
 recipient_canonical_maps = tcp:localhost:10002
-recipient_canonical_classes= envelope_recipient,header_recipient
+recipient_canonical_classes = envelope_recipient,header_recipient
