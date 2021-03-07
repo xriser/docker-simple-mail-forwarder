@@ -745,9 +745,14 @@ smtp_tls_security_level = may
 message_size_limit = 40960000
 
 #Setup Postscreen
+postscreen_greet_banner = Welcome to smtp server. Please wait...
+postscreen_greet_action = enforce
 postscreen_pipelining_enable = yes
+postscreen_pipelining_action = enforce
 postscreen_non_smtp_command_enable = yes
-postscreen_pipelining_action = drop
+postscreen_non_smtp_command_action = enforce
+postscreen_bare_newline_enable = yes
+postscreen_bare_newline_action = enforce
 
 postscreen_dnsbl_threshold = 3
 postscreen_dnsbl_action = enforce
@@ -757,7 +762,7 @@ postscreen_dnsbl_sites =
         bl.spameatingmonkey.net*2
         bl.spamcop.net
 
-#dnsbl.sorbs.net # Issue Google IPs in spamlist
+#dnsbl.sorbs.net #Issue with Google IPs in spamlist
 
 
 
